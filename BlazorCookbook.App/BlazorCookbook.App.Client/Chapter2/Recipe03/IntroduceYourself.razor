@@ -1,0 +1,38 @@
+﻿@* Perform async actions after binding *@
+
+@page "/ch02r03"
+@rendermode InteractiveWebAssembly
+@using BlazorCookbook.App.Client.Chapter2.Data
+
+<h3>What's your name?</h3>
+<input class="form-control w-50" @bind="@User" @bind:event="oninput" @bind:after="@AutocompleteAsync" /> @* @bind:after invokes method call after the binding completes *@
+
+<hr />
+
+@if (!Suggestions.Any())
+{
+    return;
+}
+
+<h5>Did you mean?</h5>
+@foreach (var name in Suggestions)
+{
+    <div>@name</div>
+}
+
+@code {
+    protected string User = string.Empty;
+
+    [Inject] private SuggestionsApi _Api { get; init; }
+    protected IList<string> Suggestions = [];
+
+    private async Task AutocompleteAsync()
+    {
+        Suggestions = string.IsNullOrWhiteSpace(User) ? [] : await _Api.FindAsync(User);
+
+        // ensures the UI re-renders safely and correctly after your async action finishes.
+        await InvokeAsync(StateHasChanged);
+    }
+
+}
+

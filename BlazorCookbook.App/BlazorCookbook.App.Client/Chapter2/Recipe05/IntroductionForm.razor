@@ -1,0 +1,51 @@
+﻿@* binding using the bind-value pattern *@
+
+@using BlazorCookbook.App.Client.Chapter2.Data
+
+<h5>What's your name?</h5>
+<input class="form-control w-50 mb-1" @bind="Name" @bind:event="oninput" @bind:after="@OnNameChanged" />
+
+<hr />
+
+<h5>What's your skill level?</h5>
+<select class="form-control w50 mb-1" onchange="@OnSkillChanged">
+    <option value="0">-</option>
+    @foreach (var level in DataSeed.SkillLevels)
+    {
+        <option value="@level.Id">
+            @level.Title
+        </option>
+    }
+</select>
+
+@code {
+    [Parameter]
+    public string Name { get; set; }
+
+    // to manage state
+    [Parameter]
+    public EventCallback<string> NameChanged { get; set; } 
+
+    [Parameter]
+    public SkillLevel Skill { get; set; }
+
+    // to manage state
+    [Parameter]
+    public EventCallback<SkillLevel> SkillChanged { get; set; } 
+
+    private Task OnNameChanged()
+    {
+        // invoke callback and propagate changes to the Name property
+        return NameChanged.InvokeAsync(Name);
+    }
+
+    private Task OnSkillChanged(ChangeEventArgs args)
+    {
+        var id = int.Parse(args.Value.ToString());
+        var skill = DataSeed.SkillLevels.SingleOrDefault(x => x.Id == id);
+
+        // invoke callback and propagate changes to the Skill property
+        return SkillChanged.InvokeAsync(skill);
+    }
+}
+

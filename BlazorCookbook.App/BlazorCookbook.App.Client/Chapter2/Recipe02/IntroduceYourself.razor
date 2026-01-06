@@ -1,0 +1,32 @@
+﻿@* binding to specific DOM event
+    for a more controlled and responsive UX  *@
+
+@page "/ch02r02"
+@rendermode InteractiveWebAssembly
+
+<h3>What's your name?</h3>
+<input class="form-control w-50" @bind="@User" @bind:event="oninput" @onfocusout="@SayHello"/> @* bind occurs each time the user types and when they click away it calls @SayHello  *@
+
+@if (IsGreetingReady)
+{
+    <h1>@Greeting</h1>
+    return;
+}
+@if (IsUserFilled)
+{
+    <h1>Introducing @User...</h1>
+}
+
+@code {
+    protected string User = string.Empty,
+                     Greeting = string.Empty;
+
+    private bool IsGreetingReady => !string.IsNullOrWhiteSpace(Greeting);
+
+    private bool IsUserFilled => !string.IsNullOrWhiteSpace(User);
+
+    private void SayHello()
+    {
+        Greeting = $"Hello {User}";
+    }
+}

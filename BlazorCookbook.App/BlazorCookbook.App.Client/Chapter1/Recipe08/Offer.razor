@@ -1,0 +1,33 @@
+﻿@* implementing generic components, allowing it to operate with any data type
+    e.g. replacing Samples.Tickets with something else as well as the context per the renderfragment. 
+*@
+
+@page "/ch01r08"
+@using BlazorCookbook.App.Client.Data
+@rendermode InteractiveWebAssembly
+
+<Grid Data="@Samples.Tickets" Context="ticket">
+    <Header>
+        <tr>
+            <td>Ticket code</td>
+            <td>Tariff</td>
+            <td>Price</td>
+            <td></td>
+        </tr>
+    </Header>
+    <Row>
+        <tr>
+            <td>@ticket.Id</td>
+            <td>@ticket.Tariff</td>
+            <td>@ticket.Price</td>
+            <td @onclick="() => Add(ticket)">
+                Add to Cart
+            </td>
+        </tr>
+    </Row>
+</Grid>
+
+@code {
+    public void Add(TicketViewModel ticket)
+    => Console.WriteLine($"Ticket {ticket.Id} added!");
+}

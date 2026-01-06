@@ -1,0 +1,33 @@
+﻿@* Detecting render mode at runtime
+    Note RendererInfo can't be called directly as its not a blazor public API
+*@
+
+@page "/ch01r04"
+@rendermode InteractiveWebAssembly
+
+@if (!_isInteractive)
+{
+    <p>Getting ready...</p>
+}
+else
+{
+    <Ticket Tariff="Adult" Price="10.00m" OnAdded="@Add" />
+    <Ticket Tariff="Child" Price="5.00m" OnAdded="@Add" />
+}
+
+@code {
+    private bool _isInteractive;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // This runs once the component has been rendered interactively
+            _isInteractive = true;
+            StateHasChanged();
+        }
+    }
+
+    private void Add()
+        => Console.WriteLine("Added to cart!");
+}

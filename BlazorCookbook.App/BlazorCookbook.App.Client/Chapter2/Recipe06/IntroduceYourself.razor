@@ -1,0 +1,66 @@
+﻿@* How to apply throttling to limit API calls 
+ *@
+
+@page "/ch02r06"
+@rendermode InteractiveWebAssembly
+@implements IDisposable
+@using BlazorCookbook.App.Client.Chapter2.Data
+
+<h3>What's your name?</h3>
+
+<input class="form-control w-50" @bind=@User
+       @bind:event="oninput"
+       @bind:after="@OnUserInput" />
+
+<hr />
+
+@if (!Suggestions.Any()) return;
+
+<h5>Did you mean?</h5>
+@foreach (var name in Suggestions)
+{
+    <div>@name</div>
+}
+
+
+@code {
+
+    protected string User = string.Empty;
+
+    [Inject] private SuggestionsApi Api { get; init; }
+    protected IList<string> Suggestions = [];
+
+    private async Task AutocompleteAsync()
+    {
+        Suggestions = string.IsNullOrWhiteSpace(User) ? [] : await Api.FindAsync(User);
+
+        // ensures the UI re-renders safely and correctly after your async autocomplete call finishes
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private Timer _debounceTimer;
+
+    private readonly TimeSpan _throttle = TimeSpan.FromMilliseconds(500);
+
+    private readonly TimeSpan _timeout = TimeSpan.FromMinutes(1);
+
+    private void OnUserInput()
+    {
+        // throttle is the is the idle time between user input and API call
+        // timeout is the overall timeout for the external call
+
+        //stop the currently scheduled operation by disposing the _debounceTimer instance
+        _debounceTimer?.Dispose();
+
+        // wrap AutocompleteAsync method within InvokeAsync to ensure thread safety
+        _debounceTimer = new Timer(_ => InvokeAsync(AutocompleteAsync), null, _throttle, _timeout);
+    }
+
+    // set to explicity dispose of the _debounceTimer instance
+    public void Dispose()
+    {
+        _debounceTimer?.Dispose();
+    }
+
+}
+

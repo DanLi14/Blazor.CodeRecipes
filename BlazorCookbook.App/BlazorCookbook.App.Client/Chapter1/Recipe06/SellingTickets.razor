@@ -1,0 +1,28 @@
+﻿@* Sharing parameters across multiple components, especially in parent-child scenarios
+
+*@
+
+@page "/ch01r06"
+@rendermode InteractiveWebAssembly
+@using BlazorCookbook.App.Client.Recipe06
+
+<CascadingValue Value="Cart">
+
+    <Ticket Tariff="Adult" Price="10.00m" />
+    <Ticket Tariff="Child" Price="5.00m" />
+
+</CascadingValue>
+
+<div class="cart-summary">
+    <div class="cart-content">Items: @Cart.Volume </div>
+    <div class="cart-value">Price: @Cart.Value</div>
+</div>
+
+@code {
+    protected Cart Cart;
+    protected override void OnInitialized()
+    {
+        // any change in the Cart object will prompt Blazor to recalculate the DOM changes
+        Cart = new(() => InvokeAsync(StateHasChanged));
+    }
+}

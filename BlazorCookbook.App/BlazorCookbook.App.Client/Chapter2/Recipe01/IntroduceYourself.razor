@@ -1,0 +1,20 @@
+﻿@* binding values with markup elements
+    to bridge gap between UI and data state *@
+
+@page "/ch02r01"
+@rendermode InteractiveWebAssembly
+
+<h3>What's your name?</h3>
+<input class="form-control w-50" @bind="@User" /> @* example of two way binding using @bind *@
+
+@if (string.IsNullOrWhiteSpace(User))
+{
+    return;
+}
+
+<hr />
+<h1>Hello @User</h1>
+
+@code {
+    protected string User = string.Empty;
+}
