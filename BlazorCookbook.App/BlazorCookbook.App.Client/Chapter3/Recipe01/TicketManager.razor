@@ -1,0 +1,31 @@
+﻿@* An event delegate acts as a bridge between client browser and code
+ *@
+
+@page "/ch03r01"
+@rendermode InteractiveWebAssembly
+@using BlazorCookbook.App.Client.Chapter3.Data
+
+<button class="btn" btn-sm btn-success @onclick="@ToggleTickets">Toggle Tickets</button> @* can also use ondrag, oncopy etc. Note onclick invokes StateHasChanged() *@
+
+@if (!ShowTickets)
+{
+    return;
+}
+<hr />
+
+@foreach (var ticket in Tickets.All)
+{
+    <div class="d-flex justify-content-between mb-1" id="ticket-@ticket.Id">
+        <div>@ticket.Title</div>
+    </div>
+}
+
+
+@code {
+    protected bool ShowTickets { get; set; }
+
+    private void ToggleTickets() // renders or hides tickets
+    {
+        ShowTickets = !ShowTickets;
+    }
+}
