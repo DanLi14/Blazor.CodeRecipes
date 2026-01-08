@@ -1,0 +1,51 @@
+﻿@* An event delegate using lambda expressions to pass parameters to the event handler.
+ *@
+
+@page "/ch03r02"
+@rendermode InteractiveWebAssembly
+@using BlazorCookbook.App.Client.Chapter3.Data
+
+<button class="btn" btn-sm btn-success @onclick="@ToggleTickets">Toggle Tickets</button> @* can also use ondrag, oncopy etc. Note onclick invokes StateHasChanged() *@
+
+@if (!ShowTickets)
+{
+    return;
+}
+<hr />
+
+@foreach (var ticket in Tickets.All)
+{
+    <div class="d-flex justify-content-between mb-1" id="ticket-@ticket.Id">
+
+        <div>@ticket.Title</div>
+        <div>
+            <button class="btn btn-sm btn-success" @onclick="() => Show(ticket)">Show details</button> @* Can't pass parameters to the method call without using lambda expression *@
+            <button class="btn btn-sm btn-success" @onclick="() => ticket.Stock += 5">Top up</button>
+        </div>
+
+    </div>
+}
+
+
+@if (SelectedTicket is null) return;
+<hr />
+
+<div>Title: @SelectedTicket.Title</div>
+<div>Price: @SelectedTicket.Price</div>
+<div>Stock: @SelectedTicket.Stock</div>
+
+@code {
+    protected Ticket SelectedTicket;
+
+    private void Show(Ticket ticket)
+    {
+        SelectedTicket = ticket;
+    }
+
+    protected bool ShowTickets { get; set; }
+
+    private void ToggleTickets() // renders or hides tickets
+    {
+        ShowTickets = !ShowTickets;
+    }
+}
