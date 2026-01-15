@@ -1,0 +1,93 @@
+﻿@* controlling event propagation by stopping default event propagation with @onclick:stopPropagation
+    Thereby ensuring localised events like @onclick which is referenced in both parent and child components do not interfere with each other.
+ *@
+
+@page "/ch03r05"
+@rendermode InteractiveWebAssembly
+@using BlazorCookbook.App.Client.Chapter3.Data
+
+<h5>Quick creation</h5>
+<p>
+    <input value="@Creator" @onkeydown=MonitorCreation @onkeydown:preventdefault />
+</p>
+
+<button class="btn" btn-sm btn-success @onclick="@ToggleTickets">Toggle Tickets</button> @* can also use ondrag, oncopy etc. Note onclick invokes StateHasChanged() *@
+
+@if (!ShowTickets)
+{
+    return;
+}
+<hr />
+
+@foreach (var ticket in Tickets.All)
+{
+    <div class="d-flex justify-content-between mb-1" id="ticket-@ticket.Id" @onclick="() => Show(ticket)"> @* user can click anywhere inside the ticket container (rather than just the show button) to show the ticket
+        and more importantly, it doesn't trigger the below @onclick events in the child component *@
+
+        <div>@ticket.Title</div>
+        <div>
+            @* we simplified the mark-up by using eventdelegates in this way *@
+            <TicketOptions 
+                OnShow="() => Show(ticket)"
+                OnTopUp="() => TopUp(ticket)"
+                OnRemove="() => Remove(ticket)" />
+        </div>
+
+    </div>
+}
+
+
+@if (SelectedTicket is null) return;
+<hr />
+
+<div>Title: @SelectedTicket.Title</div>
+<div>Price: @SelectedTicket.Price</div>
+<div>Stock: @SelectedTicket.Stock</div>
+
+@code {
+    protected bool ShowTickets { get; set; }
+
+    private void ToggleTickets() // renders or hides tickets
+    {
+        ShowTickets = !ShowTickets;
+    }
+
+    protected Ticket SelectedTicket;
+
+    private void Show(Ticket ticket)
+    {
+        SelectedTicket = ticket;
+    }
+
+    private void TopUp(Ticket ticket)
+    {
+        ticket.Stock += 5;
+    }
+
+    private void Remove(Ticket ticket)
+    {
+        Tickets.All.Remove(ticket);
+    }
+
+    internal string Creator = string.Empty;
+
+    private void MonitorCreation(KeyboardEventArgs args)
+    {
+        if (args.Key == "+")
+        {
+            Tickets.All.Add(new() { Title = Creator });
+            Creator = string.Empty;
+            return;
+        }
+        if (args.IsBackspace() && Creator.Length > 0)
+        {
+            Creator = Creator[..^1]; // uses custom extension method to remove last character from Creator
+            return;
+        }
+        if (args.IsLetter())
+        {
+            Creator += args.Key; // uses custom extension method to check for letters and adds it to Creator
+            return;
+        }
+    }
+}
