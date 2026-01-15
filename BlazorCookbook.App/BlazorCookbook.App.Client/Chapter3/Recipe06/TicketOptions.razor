@@ -1,0 +1,25 @@
+﻿
+<button class="btn btn-sm btn-success" @onclick="@OnShow" @onclick:stopPropagation> @* // prevents event propagation to the parent DOM *@
+    Show
+</button>
+
+<button class="btn btn-sm btn-info" @onclick="@OnTopUp" @onclick:stopPropagation> @* // prevents event propagation to the parent DOM *@
+    Top Up
+</button>
+
+<button class="btn btn-sm btn-danger" @onclick="@OnRemove" @onclick:stopPropagation> @* // prevents event propagation to the parent DOM *@
+    Remove
+</button>
+
+@code {
+    
+    [Parameter, EditorRequired] 
+    public EventCallback OnShow { get; set; } // invokes statehaschanged automatically
+
+    [Parameter, EditorRequired]
+    public EventCallback OnTopUp { get; set; } // invokes statehaschanged automatically
+
+    [Parameter, EditorRequired]
+    public EventCallback OnRemove { get; set; } // invokes statehaschanged automatically
+
+}
