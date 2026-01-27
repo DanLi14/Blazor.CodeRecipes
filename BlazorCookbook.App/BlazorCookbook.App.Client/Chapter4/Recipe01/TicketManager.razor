@@ -1,0 +1,21 @@
+﻿@page "/ch04r01"
+@using BlazorCookbook.App.Client.Chapter4.Data
+
+<Grid Data="@Tickets.All">
+        <Header>
+        <tr>
+            <td>Tariff</td>
+            <td>Price</td>
+        </tr>
+    </Header>
+    <Row>
+        <tr>
+            <td>@context.Tariff</td>
+            <td>@context.Price</td>
+        </tr>
+    </Row>
+</Grid>
+
+@code {
+
+}
